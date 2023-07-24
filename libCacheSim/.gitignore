@@ -1,0 +1,14 @@
+# 1a1a11a
+__pycache__
+*deprecated*
+*.DS_Store*
+*.bak
+*.clean
+*.nogit*
+*_build*
+build
+.idea
+example/cacheSimulatorC/cmake-build-debug
+.vscode/*
+*.log
+fig/
