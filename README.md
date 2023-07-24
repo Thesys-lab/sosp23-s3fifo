@@ -12,10 +12,10 @@ Our insight is that most objects in Zipf workloads will only be accessed once in
 
 
 ## Repo structure 
-The repo is a snapshot of [libCacheSim](https://github.com/1a1a11a/libCacheSim) and modified [cachelib](https://github.com/facebook/cachelib/). 
+The repo is a snapshot of [libCacheSim](https://github.com/1a1a11a/libCacheSim), modified [cachelib](https://github.com/facebook/cachelib/), and [distComp](https://github.com/1a1a11a/distComp). 
 
 
-## How to use libCacheSim
+### How to use libCacheSim
 You can compile libCacheSim, which will provide a `cachesim` binary, then you can run simulations with
 ```bash
 # ./cachesim DATAPATH TRACE_FORMAT EVICTION_ALGO CACHE_SIZE [OPTION...]
@@ -29,6 +29,9 @@ Cachelib compilation takes a longer time. You can compile cachelib with
 
 cd mybench; bash run.sh
 ```
+
+### How to use distComp
+If you need to scale up the computation by using more nodes, you would need to use distComp. See [here](https://github.com/1a1a11a/distComp) for more details. 
 
 
 ## Instructions for reproducing results (artifact evaluation)
