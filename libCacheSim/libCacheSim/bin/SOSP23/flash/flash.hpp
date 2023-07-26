@@ -1,11 +1,10 @@
 
-#include "../../include/libCacheSim/cache.h"
-#include "../../include/libCacheSim/reader.h"
-#include "../../utils/include/mymath.h"
-#include "../../utils/include/mystr.h"
-#include "../../utils/include/mysys.h"
-#include "internal.h"
-
+#include "../../../include/libCacheSim/cache.h"
+#include "../../../include/libCacheSim/reader.h"
+#include "../../../utils/include/mymath.h"
+#include "../../../utils/include/mystr.h"
+#include "../../../utils/include/mysys.h"
+#include "../../cachesim/internal.h"
 
 typedef struct {
   cache_t *ram;
@@ -30,6 +29,7 @@ typedef enum {
   RETAIN_POLICY_BELADY,
   RETAIN_NONE
 } retain_policy_t;
+
 typedef struct FIFO_Reinsertion_params {
   cache_obj_t *q_head;
   cache_obj_t *q_tail;

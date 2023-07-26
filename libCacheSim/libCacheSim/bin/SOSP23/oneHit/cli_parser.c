@@ -5,10 +5,10 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "../../include/libCacheSim/const.h"
-#include "../../utils/include/mystr.h"
-#include "../../utils/include/mysys.h"
-#include "../cli_reader_utils.h"
+#include "../../../include/libCacheSim/const.h"
+#include "../../../utils/include/mystr.h"
+#include "../../../utils/include/mysys.h"
+#include "../../cli_reader_utils.h"
 #include "internal.h"
 
 #ifdef __cplusplus
@@ -151,11 +151,9 @@ void parse_cmd(int argc, char *argv[], struct arguments *args) {
       setup_reader(args->trace_path, args->trace_type, &reader_init_params);
 }
 
-
 void free_arg(struct arguments *args) {
   close_reader(args->reader);
 }
-
 
 #ifdef __cplusplus
 }

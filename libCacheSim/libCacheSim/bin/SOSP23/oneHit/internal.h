@@ -2,8 +2,9 @@
 
 #include <inttypes.h>
 
-#include "../../include/libCacheSim/enum.h"
-#include "../../include/libCacheSim/reader.h"
+#include "../../../include/libCacheSim/cache.h"
+#include "../../../include/libCacheSim/enum.h"
+#include "../../../include/libCacheSim/reader.h"
 
 #define N_ARGS 3
 #define OFILEPATH_LEN 128
@@ -21,7 +22,7 @@ struct arguments {
   char ofilepath[OFILEPATH_LEN];
   trace_type_e trace_type;
   char *trace_type_params;
-    char task[TASK_STR_LEN];
+  char task[TASK_STR_LEN];
   int64_t n_req; /* number of requests to process */
   bool verbose;
 
@@ -29,10 +30,11 @@ struct arguments {
   reader_t *reader;
 };
 
-void parse_cmd(int argc, char *argv[], struct arguments *args);
-
 void cal_one_hit(reader_t *reader, char *ofilepath);
 
+void parse_cmd(int argc, char *argv[], struct arguments *args);
+
+void free_arg(struct arguments *args);
 
 #ifdef __cplusplus
 }

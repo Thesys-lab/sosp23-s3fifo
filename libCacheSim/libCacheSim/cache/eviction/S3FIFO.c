@@ -191,16 +191,6 @@ static bool S3FIFO_get(cache_t *cache, const request_t *req) {
 
   bool cache_hit = cache_get_base(cache, req);
 
-  // if (cache->n_req % 1000000 == 0) {
-  //   double s = params->n_obj_admit_to_fifo + params->n_obj_admit_to_main +
-  //              params->n_obj_move_to_main;
-  //   printf("%ld %ld: %.4lf/%.4lf/%.4lf, %ld %ld\n", cache->n_req,
-  //          cache->cache_size, (double)params->n_obj_admit_to_fifo / s,
-  //          (double)params->n_obj_admit_to_main / s,
-  //          (double)params->n_obj_move_to_main / s, params->fifo->cache_size,
-  //          params->main_cache->cache_size);
-  // }
-
   return cache_hit;
 }
 
