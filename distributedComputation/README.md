@@ -10,7 +10,7 @@ DistComp uses a master-worker architecture. The master node is storing the tasks
 Current design decouples task submission and task execution. A manager submits tasks to the Redis queue. The worker nodes will poll the queue and execute the tasks.
 
 ## Features
-* **DistCom maximizes resource usage**: it runs as many jobs as possible on each node. When some tasks' memory usage grow over time and the host node is running out of memory, the most recent node will be returned to the to do taks queue.
+* **DistCom maximizes resource usage**: it runs as many jobs as possible on each node. When some tasks' memory usage grow over time and the worker is going to run out of memory, the most recent task will be returned to the to do taks queue.
 * **On-demand task submission**: new tasks can be submitted at any time.
 * **Fault tolerance**: Restarted workers can fetch its previous tasks to continue, and if some workers fail, the failed tasks can be moved to the todo queue.
 * **Different types of tasks**: DistComp supports both bash jobs and Python jobs.
