@@ -1,1 +1,210 @@
 
+# How to reproduce the results
+## OS support
+All of the experiments should be operating-system-agnostic, however, we have not tested on Ubuntu 20.04 LTS, and we provide installation instructions for Ubuntu. Therefore, we recommend using Ubuntu 20 or Ubuntu 22 for reproducing the results.
+
+## Install Dependency
+```bash
+sudo apt install -yqq libglib2.0-dev libboost-all-dev zstd libzstd-dev wget
+```
+
+## Setup libCacheSim
+We use [libCacheSim](https://github.com/1a1a11a/libCacheSim) to perform simulations, it can be installed using the following commands.
+
+```bash 
+pushd libCacheSim/scripts && bash install_dependency.sh && bash install_libcachesim.sh && popd;
+```
+
+<!-- ## Setup cachelib -->
+
+---
+
+
+## Data access
+The data needed to run experiments can be downloaded from [https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/cacheDatasets/](https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/cacheDatasets/).
+
+The binary traces are [zstd](https://github.com/facebook/zstd) compressed and have the following format:
+```c
+struct {
+    uint32_t timestamp;
+    uint64_t obj_id;
+    uint32_t obj_size;
+    int64_t next_access_vtime;  // -1 if no next access
+}
+```
+The compressed traces can be used with libCacheSim without decompression. Moreover, libCacheSim provides a tracePrint tool to print the trace in human-readable format.
+However, for some experiments, we need decompressed traces, to decompress the traces, you can use the following command:
+```bash
+zstd -d /path/to/data
+```
+
+---
+
+
+## Reproduce the results and figures
+> **Note 1** 
+> The full dataset is very large (2 TB before decompression), so we suggest you only download the traces you need.
+
+> **Note 2**
+> Many of the experiments require long running time, be prepared. We suggest using the sampled Twitter traces so that you do not have to wait days for the results. 
+
+> **Note 3**
+> The commands below assume you are in the root directory, which contains the libCacheSim, result, scripts, doc folders.
+
+<!-- > **Note 4**
+> This work contains a very comprehensive evaluation, so it might be easy to to save time  -->
+
+---
+
+### Figure 2a, 2b, one-hit-wonder ratio of Zipf workloads
+This plot is generated using the following command:
+```bash
+python3 scripts/plot_one_hit_zipf.py
+```
+
+This script keeps generating requests follow Zipf distribution and measure the one-hit-wonder ratio. 
+It generates two figures in the current directory, `one_hit_ratio_zip.pdf` and `one_hit_ratio_zip_log.pdf`. 
+
+
+### Figure 2c, 2d, one-hit-wonder ratio on real-world workloads
+The two traces used in this experiment can be downloaded at [Twitter](https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/cacheDatasets/twitter/sample/cluster52.oracleGeneral.sample10.zst) and [MSR](https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/cacheDatasets/msr/msr_hm_0.oracleGeneral.zst).
+
+```bash
+# download traces
+wget https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/cacheDatasets/twitter/sample/cluster52.oracleGeneral.sample10.zst -O twitter.oracleGeneral.bin.zst
+wget https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/cacheDatasets/msr/msr_hm_0.oracleGeneral.zst -O msr.oracleGeneral.bin.zst
+
+# decompress traces
+zstd -d twitter.oracleGeneral.bin.zst
+zstd -d msr.oracleGeneral.bin.zst
+
+# calculate one-hit-wonder ratio
+python3 scripts/plot_one_hit_trace.py --datapath twitter.oracleGeneral.bin msr.oracleGeneral.bin --name twitter msr
+
+```
+
+This will generate two figures `one_hit_ratio.pdf` and `one_hit_ratio_lg.pdf`
+---
+
+### Figure 3, one-hit-wonder ratio across traces
+This figure shows the distribution of one-hit-wonder ratio across all traces. It requires first calculating the one-hit-wonder ratio for all traces, then plot the results. 
+Because the computation takes days to run and involves some traces not in the public domain, we provide computed results that can be downloaded [here](https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/sosp23/oneHit.zst). You are welcome to verify the provided results. 
+
+
+This plot is generated using the following command:
+```bash
+# download results
+wget https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/sosp23/oneHit.zst
+
+# decompress 
+zstd -d oneHit.zst
+
+# plot
+python3 scripts/plot_one_hit_trace.py --datapath oneHit --plotbox
+
+# [optionally] this calculates the last two columns of Table 1
+python3 scripts/plot_one_hit_trace.py --datapath oneHit --calperdataset
+
+```
+
+[Optional] To re-generate or verify our results, you can use the `traceOneHit` from the libCacheSim tools
+```bash
+# this will calculates the one-hit-winder ratio for every 100 new and unique objects, e.g., the one-hit-wonder ratio in the first 100, 200, 300, 400... objects  
+./libCacheSim/_build/bin/traceOneHit msr.oracleGeneral.bin oracleGeneral caloneHit
+```
+---
+
+### Figure 4, object frequency distribution during eviction
+The plots use the same two traces as Figure 2c and Figure 2d, download them if you skipped the figures
+
+To generate these two plots, we first need to turn on eviction tracking and run a few cache simulations 
+
+#### Run simulations
+```bash
+# turn on eviction tracking (will print to stdout)
+sed -i "s|// #define TRACK_EVICTION_V_AGE|#define TRACK_EVICTION_V_AGE|g" libCacheSim/libCacheSim/include/config.h
+# recompile libCacheSim
+pushd libCacheSim/_build/ && make -j && popd
+
+# run LRU caches on the Twitter trace at cache size 0.001, 0.01, 0.1 and 0.5 of #obj in the trace 
+for cache_size in 0.001 0.01 0.1 0.5; do 
+    ./libCacheSim/_build/bin/cachesim twitter.oracleGeneral.bin.zst oracleGeneral LRU ${cache_size} --ignore-obj-size 1 > twr_lru_${cache_size} &
+done
+
+# run Belady caches on the Twitter trace
+for cache_size in 0.001 0.01 0.1 0.5; do 
+    ./libCacheSim/_build/bin/cachesim twitter.oracleGeneral.bin.zst oracleGeneral Belady ${cache_size} --ignore-obj-size 1 > twr_belady_${cache_size} &
+done
+
+# run LRU caches on the MSR trace
+for cache_size in 0.001 0.01 0.1 0.5; do 
+    ./libCacheSim/_build/bin/cachesim msr.oracleGeneral.bin.zst oracleGeneral LRU ${cache_size} --ignore-obj-size 1 > msr_lru_${cache_size} &
+done
+
+# run Belady caches on the MSR trace
+for cache_size in 0.001 0.01 0.1 0.5; do 
+    ./libCacheSim/_build/bin/cachesim msr.oracleGeneral.bin.zst oracleGeneral Belady ${cache_size} --ignore-obj-size 1 > msr_belady_${cache_size} &
+done
+```
+Now wait a few minutes until all of them finish (can monitor the cachesim process with `htop`)
+
+
+#### plot the results
+
+```bash
+# Figure 4a
+python3 scripts/libCacheSim/plot_eviction_freq.py --datapath twr_lru_0.001 twr_lru_0.01 twr_lru_0.1 twr_lru_0.5 --figname twr_lru
+# Figure 4b
+python3 scripts/libCacheSim/plot_eviction_freq.py --datapath twr_belady_0.001 twr_belady_0.01 twr_belady_0.1 twr_belady_0.5 --figname twr_belady
+# Figure 4c
+python3 scripts/libCacheSim/plot_eviction_freq.py --datapath msr_lru_0.001 msr_lru_0.01 msr_lru_0.1 msr_lru_0.5 --figname msr_lru
+# Figure 4d
+python3 scripts/libCacheSim/plot_eviction_freq.py --datapath msr_belady_0.001 msr_belady_0.01 msr_belady_0.1 msr_belady_0.5 --figname msr_belady
+```
+
+This will generate four figures `eviction_freq_msr_lru.pdf`, `eviction_freq_msr_belady.pdf`, `eviction_freq_twr_lru.pdf`, and `eviction_freq_twr_belady.pdf`. 
+
+
+#### turn off eviction tracking and recompile libCacheSim
+
+```bash
+sed -i "/TRACK_EVICTION_V_AGE/d" libCacheSim/libCacheSim/include/config.h
+pushd libCacheSim/_build/ && make -j && popd;
+```
+
+### Figure 6, Figure 7, miss ratio reductions on all traces and datasets
+
+> **Warning**
+> This experiment takes 100,000 to 1,000,000 core • hours to finish, we don't expect reviewers to finish them within the deadline. So we provide already computed results so that reviewers can spot check and plot them. 
+
+The provided results are in [/result/libCacheSim/result/](/result/libCacheSim/result/)
+
+#### Plot the figures using the results
+```bash
+python3 scripts/libCacheSim/plot_miss_ratio2.py --datapath=result/libCacheSim/result/
+```
+
+This generates `miss_ratio_per_dataset_0.pdf` which is Figure 7b and `miss_ratio_per_dataset_2.pdf` which is Figure 7a, 
+and `miss_ratio_percentiles_0.pdf` which is Figure 6b and `miss_ratio_percentiles_2.pdf` which is Figure 6a. 
+
+#### [Optional] Verify the simulation results
+You can verify the simulation results by picking any trace and run cachesim using the following commands
+```bash 
+# use size 0 to choose cache size based on the trace footprint 
+# it uses cache sizes 0.001, 0.003, 0.01, 0.03, 0.1, 0.2, 0.4, 0.8 of the number of objects or bytes in the trace
+./libCacheSim/_build/bin/cachesim /path/to/data oracleGeneral algo 0 --ignore-obj-size 1
+# an example
+./libCacheSim/_build/bin/cachesim msr.oracleGeneral.bin oracleGeneral lru,s3fifo 0 --ignore-obj-size 1
+```
+
+### Figure 8
+The results are generated using cachelib implementations and plot using 
+```bash
+python3 scripts/plot_throughput.py
+```
+You should have `cachelib_thrpt_zipf_500.pdf` and `cachelib_thrpt_zipf_500.pdf`
+
+
+
+
+

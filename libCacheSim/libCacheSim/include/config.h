@@ -68,3 +68,4 @@ typedef uint64_t obj_id_t;
 #endif
 
 #endif  // libCacheSim_CONFIG_H
+

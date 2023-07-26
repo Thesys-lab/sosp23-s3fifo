@@ -1,6 +1,6 @@
 
 # FIFO queues are all you need for cache eviction
-This repo contains code for SOSP'23 paper: [FIFO queues are all you need for cache eviction](https://junchengyang.com/publication/sosp23-s3fifo.pdf)
+This repo contains code for SOSP'23 paper: [FIFO queues are all you need for cache eviction](https://jasony.me/publication/sosp23-s3fifo.pdf)
 
 ![S3-FIFO diagram](diagram/diagram_s3fifo.svg)
 

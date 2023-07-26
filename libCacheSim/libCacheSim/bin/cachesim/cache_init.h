@@ -113,6 +113,8 @@ static inline cache_t *create_cache(const char *trace_path,
     cache = S3FIFOd_init(cc_params, eviction_params);
   } else if (strcasecmp(eviction_algo, "qdlp") == 0) {
     cache = QDLP_init(cc_params, eviction_params);
+  } else if (strcasecmp(eviction_algo, "sieve") == 0) {
+    cache = Sieve_init(cc_params, eviction_params);
 #ifdef ENABLE_GLCACHE
   } else if (strcasecmp(eviction_algo, "GLCache") == 0 ||
              strcasecmp(eviction_algo, "gl-cache") == 0) {
@@ -125,10 +127,6 @@ static inline cache_t *create_cache(const char *trace_path,
 #ifdef INCLUDE_PRIV
   } else if (strcasecmp(eviction_algo, "myclock") == 0) {
     cache = MyClock_init(cc_params, eviction_params);
-  } else if (strcasecmp(eviction_algo, "sieve") == 0) {
-    cache = Sieve_init(cc_params, eviction_params);
-  } else if (strcasecmp(eviction_algo, "mclock") == 0) {
-    cache = MClock_init(cc_params, eviction_params);
   } else if (strcasecmp(eviction_algo, "sfifo") == 0) {
     cache = SFIFO_init(cc_params, eviction_params);
   } else if (strcasecmp(eviction_algo, "sfifov0") == 0) {
