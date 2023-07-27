@@ -222,7 +222,7 @@ miss_ratio_zipf = {
 }
 
 colors = ["#b2182b", "#ef8a62", "#fddbc7", "#67a9cf", "#2166ac"]
-colors = ["#b2182b", "#ef8a62", "#bfbbb7", "#67a9cf", "#2166ac"]
+colors = ["#b2182b", "#ef8a62", "#602c21", "#67a9cf", "#2166ac"]
 
 
 def plot_throughput(data_dict, yticks, name):

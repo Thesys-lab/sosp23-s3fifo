@@ -219,7 +219,8 @@ static cache_obj_t *WTinyLFU_find(cache_t *cache, const request_t *req,
 
     params->request_counter++;
     if (params->request_counter >= params->max_request_num) {
-      params->request_counter /= 2;
+      // this was the implementation from Ziyue, I think we should change to divide by 2 instead
+      params->request_counter = 0;
       minimalIncrementCBF_decay(params->CBF);
     }
   }
@@ -232,8 +233,6 @@ cache_obj_t *WTinyLFU_insert(cache_t *cache, const request_t *req) {
 
   cache_obj_t *obj = NULL;
   obj = params->LRU->insert(params->LRU, req);
-
-  // minimalIncrementCBF_add(params->CBF, (void *)&req->obj_id, sizeof(obj_id_t));
 
 #if defined(TRACK_DEMOTION)
   obj->create_time = cache->n_req;

@@ -43,9 +43,9 @@ void calWriteAmp(reader_t *reader, cache_t *cache) {
     req->clock_time -= start_ts;
   }
 
-  printf("%s %32s miss ratio %.4lf %.4lf, ", basename(reader->trace_path),
-         cache->cache_name, n_miss / (double)n_req,
-         n_miss_byte / (double)n_byte);
+  printf("%s %32s miss ratio %.4lf byte miss ratio %.4lf, ",
+         basename(reader->trace_path), cache->cache_name,
+         n_miss / (double)n_req, n_miss_byte / (double)n_byte);
 
   int64_t n_byte_write = n_miss_byte;
   if (strcasecmp("fifo", cache->cache_name) == 0) {
@@ -60,11 +60,6 @@ void calWriteAmp(reader_t *reader, cache_t *cache) {
           (Clock_params_t *)params->disk->eviction_params;
       n_byte_write += clock_params->n_byte_rewritten;
     }
-    // } else if (strcasecmp(cache->cache_name, "clock") == 0 &&
-    //            strcasecmp(cache->cache_name, "qdlp") == NULL) {
-    //   Clock_params_t *params = (Clock_params_t *)cache->eviction_params;
-
-    //   n_byte_write = n_miss_byte + params->n_byte_rewritten;
   } else if (strcasecmp(cache->cache_name, "FIFO_Reinsertion") == 0) {
     FIFO_Reinsertion_params_t *params =
         (FIFO_Reinsertion_params_t *)cache->eviction_params;

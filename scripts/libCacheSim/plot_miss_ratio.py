@@ -53,7 +53,7 @@ def plot_scatter(datapath, size_idx=0, metric="miss_ratio"):
         "TencentBlock",
         "AlibabaBlock",
         "SocialNetwork1",
-        "meta_kv", 
+        "meta_kv",
         "Twitter",
         "CDN1",
         "CDN2",
@@ -61,7 +61,7 @@ def plot_scatter(datapath, size_idx=0, metric="miss_ratio"):
         "meta_cdn",
         "Wiki",
     ]
-    
+
     dataset_to_mr_reduction = {}
     plt.figure(figsize=(28, 10.8))
     for dataset in datasets:
@@ -76,11 +76,12 @@ def plot_scatter(datapath, size_idx=0, metric="miss_ratio"):
 
     for algo in reversed(algo_list):
         logger.debug(
-            "{:48} {} data loaded".format(algo, 
+            "{:48} {} data loaded".format(
+                algo,
                 [
                     len(dataset_to_mr_reduction[dataset][size_idx][algo])
                     for dataset in datasets
-                ]
+                ],
             )
         )
         y = [
@@ -108,7 +109,7 @@ def plot_scatter(datapath, size_idx=0, metric="miss_ratio"):
     #     plt.text(-0.032, 7.64, "<---TinyLFU -0.14", fontsize=28, )
     #     plt.xlim(left=-0.04)
     if size_idx == 2:
-    #     plt.text(-0.063, 11.72, "<---TinyLFU -0.11", fontsize=28, )
+        #     plt.text(-0.063, 11.72, "<---TinyLFU -0.11", fontsize=28, )
         plt.xlim(left=-0.02)
     # elif size_idx == 1:
     #     pass
@@ -150,10 +151,7 @@ def plot_scatter(datapath, size_idx=0, metric="miss_ratio"):
     else:
         plt.xlabel("Miss ratio reduction from FIFO", fontsize=42)
     plt.grid(axis="x", linestyle="--", linewidth=1, alpha=0.5)
-    plt.savefig(
-        "{}_per_dataset_{}.pdf".format(metric, size_idx), 
-        bbox_inches="tight"
-    )
+    plt.savefig("{}_per_dataset_{}.pdf".format(metric, size_idx), bbox_inches="tight")
     plt.close()
     plt.clf()
 
@@ -174,17 +172,14 @@ def plot_percentiles(datapath, size_idx=0, metric="miss_ratio"):
         "TwoQ",
         "S4LRU(25:25:25:25)",
         "ARC",
-
         "Cacheus",
         "LeCaR",
         "LHD",
-
         "FIFO_Merge_FREQUENCY",
         "Clock",
         "B-LRU",
         "LRU",
     ]
-
 
     name_list = [update_algo_name(algo) for algo in algo_list]
 
@@ -260,7 +255,6 @@ def plot_percentiles(datapath, size_idx=0, metric="miss_ratio"):
     #     range(len(y)), y, label="Min", marker=next(markers), color=next(colors), s=480
     # )
 
-
     if plt.ylim()[0] < -0.1:
         plt.ylim(bottom=-0.04)
 
@@ -277,9 +271,7 @@ def plot_percentiles(datapath, size_idx=0, metric="miss_ratio"):
         bbox_to_anchor=(-0.02, 1.2),
         frameon=False,
     )
-    plt.savefig(
-        "{}_percentiles_{}.pdf".format(metric, size_idx), bbox_inches="tight"
-    )
+    plt.savefig("{}_percentiles_{}.pdf".format(metric, size_idx), bbox_inches="tight")
     plt.clf()
 
 
@@ -307,7 +299,11 @@ def compare_two_algo_miss_ratio(datapath, algo1, algo2, size_idx_list=(0, 1, 2, 
 
             mr_reduction_list.append((mr1 - mr2) / mr1)
 
-    print("{}/{}".format(sum([1 for x in mr_reduction_list if x > 0]), len(mr_reduction_list)))
+    print(
+        "{}/{}".format(
+            sum([1 for x in mr_reduction_list if x > 0]), len(mr_reduction_list)
+        )
+    )
 
     print(
         f"{algo1:32} {algo2:32}: miss ratio reduction mean: {np.mean(mr_reduction_list):.4f}, median: {np.median(mr_reduction_list):.4f}, \
@@ -319,9 +315,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--datapath", type=str, help="path to the cachesim result"
-    )
+    parser.add_argument("--datapath", type=str, help="path to the cachesim result")
     ap = parser.parse_args()
 
     plot_scatter(ap.datapath, size_idx=0, metric="miss_ratio")
@@ -329,4 +323,3 @@ if __name__ == "__main__":
 
     plot_percentiles("{}/all".format(ap.datapath), size_idx=0, metric="miss_ratio")
     plot_percentiles("{}/all".format(ap.datapath), size_idx=2, metric="miss_ratio")
-

@@ -84,6 +84,7 @@ python3 scripts/plot_one_hit_trace.py --datapath twitter.oracleGeneral.bin msr.o
 ```
 
 This will generate two figures `one_hit_ratio.pdf` and `one_hit_ratio_lg.pdf`
+
 ---
 
 ### Figure 3, one-hit-wonder ratio across traces
@@ -205,6 +206,122 @@ python3 scripts/plot_throughput.py
 You should have `cachelib_thrpt_zipf_500.pdf` and `cachelib_thrpt_zipf_500.pdf`
 
 
+### Figure 9
+These figures are plotted using two CDN traces from Tencent and Wikimedia and can be downloaded here: [Tencent](https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/cacheDatasets/tencentPhoto/tencent_photo1.oracleGeneral.zst), [WikiMedia](https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/cacheDatasets/wiki/wiki_2019t.oracleGeneral.zst)
+
+```bash
+# download traces
+wget https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/cacheDatasets/tencentPhoto/tencent_photo1.oracleGeneral.zst -O tencent_photo1.oracleGeneral.bin.zst
+wget https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/cacheDatasets/wiki/wiki_2019t.oracleGeneral.zst -O wiki_2019t.oracleGeneral.bin.zst
+
+# decompress
+zstd -d tencent_photo1.oracleGeneral.bin.zst;
+zstd -d wiki_2019t.oracleGeneral.bin.zst;
+
+# calculate the miss ratio and write amplification of FIFO 
+./libCacheSim/_build/bin/flash /path/to/data oracleGeneral FIFO 0.1 &
+
+for dram_size_ratio in 0.001 0.01 0.1; do
+    # calculate the miss ratio and write amplication of probabilistic admission
+    ./libCacheSim/_build/bin/flash /path/to/data oracleGeneral flashProb 0.1 -e "ram-size-ratio=${dram_size_ratio},disk-admit-prob=0.2,disk-cache=fifo"
+    # calculate the miss ratio and write amplication of S3FIFO using FIFO filters
+    ./libCacheSim/_build/bin/flash /path/to/data oracleGeneral qdlp 0.1 -e "fifo-size-ratio=${dram_size_ratio},main-cache=fifo,move-to-main-threshold=2"
+done
+```
+
+We implemented the flashield simulator in Python, and you need to install `sklean` and `lru-dict`
+```bash
+python -m pip install scikit-learn lru-dict
+```
+
+Then you can run flashield: 
+```bash
+# calcualte the miss ratio and write amplification of flashield
+# note that this will take more than one day to run, add --logging-interval 100000 to have frequent logging
+python3 scripts/flashield/flashield.py /path/to/data --ram-size-ratio=0.001 --disk-cache-type=FIFO --use-obj-size true
+python3 scripts/flashield/flashield.py /path/to/data --ram-size-ratio=0.01 --disk-cache-type=FIFO --use-obj-size true
+python3 scripts/flashield/flashield.py /path/to/data --ram-size-ratio=0.10 --disk-cache-type=FIFO --use-obj-size true
+```
+You can take the last line as the result. 
+We have filled the result in [plot_write_amp.py](/scripts/plot_write_amp.py), which are similar to the results above, so you can plot using 
+```bash
+python3 scripts/plot_write_amp.py
+```
+
+This will generate `write_amp.pdf`. 
 
 
+### Table 2
+The results in the table are from cachesim using the Twitter and MSR traces
+```bash
+# get the miss ratio of LRU and ARC 
+./libCacheSim/_build/bin/cachesim msr.oracleGeneral.bin oracleGeneral lru,arc 0.1 --ignore-obj-size 1
+
+# get the miss ratios of S3-FIFO with different small FIFO sizes
+# the second col S3FIFO-0.0100-2 is the algorithm name where the 0.0100 is the small FIFO queue size
+for s in 0.01 0.02 0.05 0.10 0.20 0.30 0.40; do 
+    echo "running simulation using cache S3-FIFO cache size 0.1 small fifo size $s trace MSR"
+    ./libCacheSim/_build/bin/cachesim msr.oracleGeneral.bin oracleGeneral s3fifo 0.1 --ignore-obj-size 1 -e "fifo-size-ratio=${s}" | tail -n 1
+done
+
+# get the miss ratios of W-TinyLFU with different window sizes
+for s in 0.01 0.02 0.05 0.10 0.20 0.30 0.40; do 
+    echo "running simulation using cache W-TinyLFU cache size 0.1 small fifo size $s trace MSR"
+    ./libCacheSim/_build/bin/cachesim msr.oracleGeneral.bin oracleGeneral wtinylfu 0.1 --ignore-obj-size 1 -e "window-size=${s}" | tail -n 1
+done
+```
+The output are the results in the table.
+
+
+### Figure 10 
+Congratulations! This is the final figure, but it also the most complex one. :) 
+We have compiled the results and stored in [result/demotion/](/result/demotion/), so that you can directly plot the computed data using 
+```bash
+# MSR and large size
+python3 scripts/libCacheSim/plot_demotion.py plot --datapath result/demotion/demotion_0.1 --dataname MSR
+
+# MSR and small size
+python3 scripts/libCacheSim/plot_demotion.py plot --datapath result/demotion/demotion_0.001 --dataname MSR
+
+# Twitter and large size
+python3 scripts/libCacheSim/plot_demotion.py plot --datapath result/demotion/demotion_0.1 --dataname twitter
+
+# Twitter and small size
+python3 scripts/libCacheSim/plot_demotion.py plot --datapath result/demotion/demotion_0.001 --dataname twitter
+``` 
+
+The generated figures will have name `MSR_demotion.pdf` and `twitter_demotion.pdf`
+
+
+[optional] If you would like to verify the results, e.g., the results in result/demotion/demotion_0.1 
+```bash
+# turn on demotion tracking
+sed -i "s|// #define TRACK_DEMOTION|#define TRACK_DEMOTION|g" libCacheSim/libCacheSim/include/config.h
+# compile
+pushd libCacheSim/_build/ && make -j && popd
+
+mkdir demotion;
+# get the demotion result of ARC
+./libCacheSim/_build/bin/cachesim msr.oracleGeneral.bin oracleGeneral arc 0.1 --ignore-obj-size 1 > demotion/MSR_ARC_0.1
+
+# get the demotion result of S3-FIFO
+for s in 0.01 0.02 0.05 0.10 0.20 0.30 0.40; do 
+    echo "running simulation using cache S3-FIFO cache size 0.1 small fifo size $s trace MSR"
+    ./libCacheSim/_build/bin/cachesim msr.oracleGeneral.bin oracleGeneral s3fifo 0.1 --ignore-obj-size 1 -e "fifo-size-ratio=${s}" > demotion/MSR_S3FIFO_0.1_${s}
+done
+
+# get the demotion result of W-TinyLFU
+for s in 0.01 0.02 0.05 0.10 0.20 0.30 0.40; do 
+    echo "running simulation using cache TinyLFU cache size 0.1 small fifo size $s trace MSR"
+    ./libCacheSim/_build/bin/cachesim msr.oracleGeneral.bin oracleGeneral wtinylfu 0.1 --ignore-obj-size 1 -e "window-size=${s}" > demotion/MSR_TinyLFU_0.1_${s}
+done
+
+# Analyze the demotion results
+for f in demotion/*; do
+    python3 scripts/libCacheSim/plot_demotion.py calc --datapath $f; 
+done
+```
+---
+
+Wow, congratulations! You have reached the end of the artifact evaluation! 
 

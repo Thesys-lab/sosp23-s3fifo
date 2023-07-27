@@ -204,7 +204,7 @@ def load_miss_ratio_reduction_from_dir(data_dir_path, algos, metric="miss_ratio"
                     )
                 )
                 continue
-            
+
             for algo, mr_reduction in mr_reduction_dict.items():
                 mr_reduction_dict_list[size_idx][algo].append(mr_reduction)
 
