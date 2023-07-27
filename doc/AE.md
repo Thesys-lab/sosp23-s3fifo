@@ -274,7 +274,6 @@ The output are the results in the table.
 
 
 ### Figure 10 
-Congratulations! This is the final figure, but it also the most complex one. :) 
 We have compiled the results and stored in [result/demotion/](/result/demotion/), so that you can directly plot the computed data using 
 ```bash
 # MSR and large size
@@ -321,6 +320,19 @@ for f in demotion/*; do
     python3 scripts/libCacheSim/plot_demotion.py calc --datapath $f; 
 done
 ```
+
+### Figure 11 Miss ratio reduction on different small FIFO queue sizes
+This set of results are similar to Figure 6 and also requires a lot of computation, we estimate another 1 million cores•hours, so we provide the results. 
+Reviewers can spot check the results using libCacheSim
+
+```bash
+# plot the miss ratio reduction results
+python3 scripts/libCacheSim/plot_fifo_size.py --datapath result/cachesim_fifo/
+```
+
+The figures will be `miss_ratio_percentiles_0.pdf` and `miss_ratio_percentiles_2.pdf` for small and large cache sizes. 
+
+
 ---
 
 Wow, congratulations! You have reached the end of the artifact evaluation! 

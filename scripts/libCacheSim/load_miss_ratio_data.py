@@ -14,7 +14,7 @@ logger = logging.getLogger("load_miss_ratio")
 logger.setLevel(logging.DEBUG)
 
 regex = re.compile(
-    r"result/(?P<data>.*?) (?P<algo>.*?) cache size \s*(?P<cache_size>\d+)(?P<cache_size_unit>[KMGT]iB)?, (?P<n_req>\d+) req, miss ratio (?P<miss_ratio>\d\.\d+), byte miss ratio (?P<byte_miss_ratio>\d\.\d+)"
+    r"(?P<data>.*?) (?P<algo>.*?) cache size \s*(?P<cache_size>\d+)(?P<cache_size_unit>[KMGT]iB)?, (?P<n_req>\d+) req, miss ratio (?P<miss_ratio>\d\.\d+), byte miss ratio (?P<byte_miss_ratio>\d\.\d+)"
 )
 
 N_CACHE_SIZES = 8
