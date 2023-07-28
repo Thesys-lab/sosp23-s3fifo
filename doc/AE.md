@@ -42,17 +42,12 @@ zstd -d /path/to/data
 
 
 ## Reproduce the results and figures
-> **Note 1** 
-> The full dataset is very large (2 TB before decompression), so we suggest you only download the traces you need.
-
-> **Note 2**
+> **Note** 
+> The full dataset is very large (2 TB before decompression), so we suggest you only download the traces you need. 
 > Many of the experiments require long running time, be prepared. We suggest using the sampled Twitter traces so that you do not have to wait days for the results. 
 
-> **Note 3**
+> **Note**
 > The commands below assume you are in the root directory, which contains the libCacheSim, result, scripts, doc folders.
-
-<!-- > **Note 4**
-> This work contains a very comprehensive evaluation, so it might be easy to to save time  -->
 
 ---
 
@@ -205,6 +200,33 @@ python3 scripts/plot_throughput.py
 ```
 You should have `cachelib_thrpt_zipf_500.pdf` and `cachelib_thrpt_zipf_500.pdf`
 
+[Optional] If you would like to run cachelib to verify the results, follow the instructions below
+Note that this needs a machine with Intel CPUs of at least 16 hardware threads (32 hyper-threads) in one NUMA domain. If you use Cloudlab, we recommend using r650 and c6420 from Clemson cloudlab. 
+
+Setup for the benchmark
+
+```bash
+# generate Zipf request data of 1 million objects 100 million requests
+python3 libCacheSim/scripts/data_gen.py -m 1000000 -n 20000000 --alpha 1.0 --bin-output cachelib/mybench/zipf1.0_1_100.oracleGeneral.bin
+
+cd cachelib/mybench/; 
+
+# turnoff turobo boose and change to performance mode, this is very important for getting consistent results
+bash turboboost.sh disable
+# you can monitor the CPU freq using this 
+# watch -n.1 "cat /proc/cpuinfo | grep \"^[c]pu MHz\" | sort -t : -r -nk 2"
+
+# build cachelib, it takes a few minutes up to one hour
+bash build.sh
+```
+
+Run benchmark
+```bash
+# usage: bash run.sh algo size
+bash run.sh s3fifo 4000
+
+```
+
 
 ### Figure 9
 These figures are plotted using two CDN traces from Tencent and Wikimedia and can be downloaded here: [Tencent](https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/cacheDatasets/tencentPhoto/tencent_photo1.oracleGeneral.zst), [WikiMedia](https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/cacheDatasets/wiki/wiki_2019t.oracleGeneral.zst)
@@ -336,4 +358,7 @@ The figures will be `miss_ratio_percentiles_0.pdf` and `miss_ratio_percentiles_2
 ---
 
 Wow, congratulations! You have reached the end of the artifact evaluation! 
+
+
+
 

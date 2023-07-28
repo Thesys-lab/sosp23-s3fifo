@@ -3,9 +3,7 @@
 This repo contains code for SOSP'23 paper: [FIFO queues are all you need for cache eviction](https://jasony.me/publication/sosp23-s3fifo.pdf)
 
 <div style="text-align: center;">
-<center>
   <img src="/doc/diagram/diagram_s3fifo.svg" alt="diagram" width="480"/>
-</center>
 </div>
 
 <!-- ![S3-FIFO diagram](/doc/diagram/diagram_s3fifo.svg) -->
@@ -35,7 +33,18 @@ Detailed instructions can be found at [libCacheSim](https://github.com/1a1a11a/l
 Cachelib compilation takes a longer time. You can compile cachelib with
 ```bash
 
-cd mybench; bash run.sh
+# generate data 
+python3 libCacheSim/scripts/data_gen.py -m 1000000 -n 20000000 --alpha 1.0 --bin-output cachelib/mybench/zipf1.0_1_100.oracleGeneral.bin
+
+cd cachelib/mybench; 
+bash turboboost.sh disable;
+bash build.sh; 
+bash run.sh s3fifo 4000
+```
+
+This will generate binaries of different caches under `_build/`. You can then run
+```bash
+./_build/algo trace size_mb hashpower n_thread
 ```
 
 ### How to use distComp
