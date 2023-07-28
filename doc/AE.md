@@ -209,6 +209,7 @@ Setup for the benchmark
 # generate Zipf request data of 1 million objects 100 million requests
 python3 libCacheSim/scripts/data_gen.py -m 1000000 -n 20000000 --alpha 1.0 --bin-output cachelib/mybench/zipf1.0_1_100.oracleGeneral.bin
 
+git clone https://github.com/Thesys-lab/cachelib;
 cd cachelib/mybench/; 
 
 # turnoff turobo boose and change to performance mode, this is very important for getting consistent results

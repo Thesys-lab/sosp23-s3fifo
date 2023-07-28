@@ -30,15 +30,18 @@ You can compile libCacheSim, which will provide a `cachesim` binary, then you ca
 Detailed instructions can be found at [libCacheSim](https://github.com/1a1a11a/libCacheSim).
 
 ### How to use cachelib
-Cachelib compilation takes a longer time. You can compile cachelib with
 ```bash
 
 # generate data 
-python3 libCacheSim/scripts/data_gen.py -m 1000000 -n 20000000 --alpha 1.0 --bin-output cachelib/mybench/zipf1.0_1_100.oracleGeneral.bin
+python3 libCacheSim/scripts/data_gen.py -m 1000000 -n 100000000 --alpha 1.0 --bin-output cachelib/mybench/zipf1.0_1_100.oracleGeneral.bin
 
+git clone https://github.com/Thesys-lab/cachelib
 cd cachelib/mybench; 
+# turnoff turobo boose and change to performance mode, this is very important for getting consistent results
 bash turboboost.sh disable;
+# build cachelib
 bash build.sh; 
+# usage: bash run.sh algo size
 bash run.sh s3fifo 4000
 ```
 
