@@ -3,5 +3,11 @@
 **/_build/**
 __pycache__
 *.pyc
-
+*.pdf
+*.zst
+*.cachesim
+*.pickle
+**/dep/**
+.DS_Store
+.vscode
 

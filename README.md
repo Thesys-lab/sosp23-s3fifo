@@ -24,6 +24,13 @@ The repo is a snapshot of [libCacheSim](https://github.com/1a1a11a/libCacheSim),
 ### How to use libCacheSim
 You can compile libCacheSim, which will provide a `cachesim` binary, then you can run simulations with
 ```bash
+# compile libcachesim
+pushd libCacheSim/scripts && bash install_dependency.sh && bash install_libcachesim.sh && popd;
+```
+
+Use cacheSim to run cache simulations
+
+```bash
 # ./cachesim DATAPATH TRACE_FORMAT EVICTION_ALGO CACHE_SIZE [OPTION...]
 ./cachesim DATA oracleGeneral fifo,arc,lecar,s3fifo 0 --ignore-obj-size 1
 ```
@@ -35,7 +42,7 @@ Detailed instructions can be found at [libCacheSim](https://github.com/1a1a11a/l
 # generate data 
 python3 libCacheSim/scripts/data_gen.py -m 1000000 -n 100000000 --alpha 1.0 --bin-output cachelib/mybench/zipf1.0_1_100.oracleGeneral.bin
 
-git clone https://github.com/Thesys-lab/cachelib
+git clone https://github.com/Thesys-lab/cachelib-sosp23
 cd cachelib/mybench; 
 # turnoff turobo boose and change to performance mode, this is very important for getting consistent results
 bash turboboost.sh disable;
