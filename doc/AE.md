@@ -199,6 +199,10 @@ for trace in ${trace_dir}; do
     ./libCacheSim/_build/bin/cachesim ${trace} oracleGeneral FIFO,LRU,ARC,LIRS,TinyLFU,2Q,SLRU,S3FIFO 0 --ignore-obj-size 1;
 done
 ```
+
+
+If your node does not have enough DRAM, you can reduce the number of algorithms in each run and run each command one by one. 
+
 This will create a `result` folder and store the results in the folder, and it also prints the output to stdout. 
 You verify with the result data we provided under `result/cachesim/MSR/`.
 
