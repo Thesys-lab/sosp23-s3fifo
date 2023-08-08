@@ -206,3 +206,4 @@ if __name__ == "__main__":
     plot_fifo_size_percentiles(
         "{}".format(ap.datapath), size_idx=2, metric="miss_ratio"
     )
+

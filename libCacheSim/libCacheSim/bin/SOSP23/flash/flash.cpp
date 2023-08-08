@@ -50,12 +50,12 @@ void calWriteAmp(reader_t *reader, cache_t *cache) {
   int64_t n_byte_write = n_miss_byte;
   if (strcasecmp("fifo", cache->cache_name) == 0) {
     ;
-  } else if (strcasecmp(cache->cache_name, "flashProb") == 0) {
+  } else if (strcasestr(cache->cache_name, "flashProb") != NULL) {
     flashProb_params_t *params = (flashProb_params_t *)cache->eviction_params;
 
     n_byte_write = params->n_byte_move_to_disk;
 
-    if (strcasecmp(params->disk->cache_name, "Clock") == 0) {
+    if (strcasestr(params->disk->cache_name, "Clock") != NULL) {
       Clock_params_t *clock_params =
           (Clock_params_t *)params->disk->eviction_params;
       n_byte_write += clock_params->n_byte_rewritten;

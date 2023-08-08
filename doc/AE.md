@@ -15,8 +15,6 @@ We use [libCacheSim](https://github.com/1a1a11a/libCacheSim) to perform simulati
 pushd libCacheSim/scripts && bash install_dependency.sh && bash install_libcachesim.sh && popd;
 ```
 
-<!-- ## Setup cachelib -->
-
 ---
 
 
@@ -120,7 +118,7 @@ To generate these two plots, we first need to turn on eviction tracking and run 
 # turn on eviction tracking (will print to stdout)
 sed -i "s|// #define TRACK_EVICTION_V_AGE|#define TRACK_EVICTION_V_AGE|g" libCacheSim/libCacheSim/include/config.h
 # recompile libCacheSim
-pushd libCacheSim/_build/ && make -j && popd
+pushd libCacheSim/_build/ && cmake .. && make -j && popd
 
 # run LRU caches on the Twitter trace at cache size 0.001, 0.01, 0.1 and 0.5 of #obj in the trace 
 for cache_size in 0.001 0.01 0.1 0.5; do 
@@ -164,7 +162,7 @@ This will generate four figures `eviction_freq_msr_lru.pdf`, `eviction_freq_msr_
 #### turn off eviction tracking and recompile libCacheSim
 
 ```bash
-sed -i "/TRACK_EVICTION_V_AGE/d" libCacheSim/libCacheSim/include/config.h
+sed -i "s/#define TRACK_EVICTION_V_AGE//g" libCacheSim/libCacheSim/include/config.h
 pushd libCacheSim/_build/ && make -j && popd;
 ```
 
@@ -173,11 +171,11 @@ pushd libCacheSim/_build/ && make -j && popd;
 > **Warning**
 > This experiment takes 100,000 to 1,000,000 core • hours to finish, we don't expect reviewers to finish them within the deadline. So we provide already computed results so that reviewers can spot check and plot them. 
 
-The provided results are in [/result/libCacheSim/result/](/result/libCacheSim/result/)
+The provided results are in [/result/cachesim/](/result/cachesim/)
 
 #### Plot the figures using the results
 ```bash
-python3 scripts/libCacheSim/plot_miss_ratio2.py --datapath=result/libCacheSim/result/
+python3 scripts/libCacheSim/plot_miss_ratio.py --datapath=result/cachesim/
 ```
 
 This generates `miss_ratio_per_dataset_0.pdf` which is Figure 7b and `miss_ratio_per_dataset_2.pdf` which is Figure 7a, 
@@ -192,6 +190,18 @@ You can verify the simulation results by picking any trace and run cachesim usin
 # an example
 ./libCacheSim/_build/bin/cachesim msr.oracleGeneral.bin oracleGeneral lru,s3fifo 0 --ignore-obj-size 1
 ```
+
+You can also verify the result of one dataset, for example, the MSR dataset, 
+* first download all traces of the MSR dataset from https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/cacheDatasets/
+* then you can run `cachesim` on each trace and collect the results
+```bash
+for trace in ${trace_dir}; do
+    ./libCacheSim/_build/bin/cachesim ${trace} oracleGeneral FIFO,LRU,ARC,LIRS,TinyLFU,2Q,SLRU,S3FIFO 0 --ignore-obj-size 1;
+done
+```
+This will create a `result` folder and store the results in the folder, and it also prints the output to stdout. 
+You verify with the result data we provided under `result/cachesim/MSR/`.
+
 
 ### Figure 8
 The results are generated using cachelib implementations and plot using 
@@ -247,7 +257,7 @@ zstd -d wiki_2019t.oracleGeneral.bin.zst;
 for dram_size_ratio in 0.001 0.01 0.1; do
     # calculate the miss ratio and write amplication of probabilistic admission
     ./libCacheSim/_build/bin/flash /path/to/data oracleGeneral flashProb 0.1 -e "ram-size-ratio=${dram_size_ratio},disk-admit-prob=0.2,disk-cache=fifo"
-    # calculate the miss ratio and write amplication of S3FIFO using FIFO filters
+    # calculate the miss ratio and write amplication when using FIFO filters
     ./libCacheSim/_build/bin/flash /path/to/data oracleGeneral qdlp 0.1 -e "fifo-size-ratio=${dram_size_ratio},main-cache=fifo,move-to-main-threshold=2"
 done
 ```
@@ -346,7 +356,7 @@ done
 
 ### Figure 11 Miss ratio reduction on different small FIFO queue sizes
 This set of results are similar to Figure 6 and also requires a lot of computation, we estimate another 1 million cores•hours, so we provide the results. 
-Reviewers can spot check the results using libCacheSim
+Reviewers can spot check the results using libCacheSim by running
 
 ```bash
 # plot the miss ratio reduction results
@@ -354,6 +364,18 @@ python3 scripts/libCacheSim/plot_fifo_size.py --datapath result/cachesim_fifo/
 ```
 
 The figures will be `miss_ratio_percentiles_0.pdf` and `miss_ratio_percentiles_2.pdf` for small and large cache sizes. 
+
+
+#### [Optional] Verify the simulation results
+To spot check the result, you can pick a trace and run the following commands
+```bash
+    # use cachesim to obtain results of different small FIFO queue sizes
+    ./libCacheSim/_build/bin/cachesim /path/to/trace oracleGeneral s3fifo 0.1 --ignore-obj-size 1 -e "fifo-size-ratio=${s}"
+
+    # for example, we can run simulation using cache S3-FIFO cache size 0.001 and 0.1, small fifo size $s on the small MSR trace
+    ./libCacheSim/_build/bin/cachesim msr.oracleGeneral.bin.zst oracleGeneral s3fifo 0.001,0.1 --ignore-obj-size 1 -e "fifo-size-ratio=0.1"
+```
+
 
 
 ---

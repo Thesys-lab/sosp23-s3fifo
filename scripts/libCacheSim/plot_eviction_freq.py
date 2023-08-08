@@ -3,15 +3,9 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../")
 from pyutils.common import *
-import re
-import glob
-import math
-import pickle
-import itertools
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import LogLocator, AutoMinorLocator
-from load_eviction_stat import load_eviction_stat
 
 
 def load_eviction_stat(datapath):
