@@ -122,12 +122,12 @@ pushd libCacheSim/_build/ && cmake .. && make -j && popd
 
 # run LRU caches on the Twitter trace at cache size 0.001, 0.01, 0.1 and 0.5 of #obj in the trace 
 for cache_size in 0.001 0.01 0.1 0.5; do 
-    ./libCacheSim/_build/bin/cachesim twitter.oracleGeneral.bin.zst oracleGeneral LRU ${cache_size} --ignore-obj-size 1 > twr_lru_${cache_size} &
+    ./libCacheSim/_build/bin/cachesim twitter.oracleGeneral.bin.zst oracleGeneral LRU ${cache_size} --ignore-obj-size 1 > twitter_lru_${cache_size} &
 done
 
 # run Belady caches on the Twitter trace
 for cache_size in 0.001 0.01 0.1 0.5; do 
-    ./libCacheSim/_build/bin/cachesim twitter.oracleGeneral.bin.zst oracleGeneral Belady ${cache_size} --ignore-obj-size 1 > twr_belady_${cache_size} &
+    ./libCacheSim/_build/bin/cachesim twitter.oracleGeneral.bin.zst oracleGeneral Belady ${cache_size} --ignore-obj-size 1 > twitter_belady_${cache_size} &
 done
 
 # run LRU caches on the MSR trace
@@ -147,16 +147,16 @@ Now wait a few minutes until all of them finish (can monitor the cachesim proces
 
 ```bash
 # Figure 4a
-python3 scripts/libCacheSim/plot_eviction_freq.py --datapath twr_lru_0.001 twr_lru_0.01 twr_lru_0.1 twr_lru_0.5 --figname twr_lru
+python3 scripts/libCacheSim/plot_eviction_freq.py --datapath twitter_lru_0.001 twitter_lru_0.01 twitter_lru_0.1 twitter_lru_0.5 --figname twitter_lru
 # Figure 4b
-python3 scripts/libCacheSim/plot_eviction_freq.py --datapath twr_belady_0.001 twr_belady_0.01 twr_belady_0.1 twr_belady_0.5 --figname twr_belady
+python3 scripts/libCacheSim/plot_eviction_freq.py --datapath twitter_belady_0.001 twitter_belady_0.01 twitter_belady_0.1 twitter_belady_0.5 --figname twitter_belady
 # Figure 4c
 python3 scripts/libCacheSim/plot_eviction_freq.py --datapath msr_lru_0.001 msr_lru_0.01 msr_lru_0.1 msr_lru_0.5 --figname msr_lru
 # Figure 4d
 python3 scripts/libCacheSim/plot_eviction_freq.py --datapath msr_belady_0.001 msr_belady_0.01 msr_belady_0.1 msr_belady_0.5 --figname msr_belady
 ```
 
-This will generate four figures `eviction_freq_msr_lru.pdf`, `eviction_freq_msr_belady.pdf`, `eviction_freq_twr_lru.pdf`, and `eviction_freq_twr_belady.pdf`. 
+This will generate four figures `eviction_freq_msr_lru.pdf`, `eviction_freq_msr_belady.pdf`, `eviction_freq_twitter_lru.pdf`, and `eviction_freq_twitter_belady.pdf`. 
 
 
 #### turn off eviction tracking and recompile libCacheSim
