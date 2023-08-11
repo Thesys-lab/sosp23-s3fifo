@@ -162,7 +162,7 @@ This will generate four figures `eviction_freq_msr_lru.pdf`, `eviction_freq_msr_
 #### turn off eviction tracking and recompile libCacheSim
 
 ```bash
-sed -i "s/#define TRACK_EVICTION_V_AGE//g" libCacheSim/libCacheSim/include/config.h
+sed -i "s|#define TRACK_EVICTION_V_AGE|// #define TRACK_EVICTION_V_AGE|g" libCacheSim/libCacheSim/include/config.h
 pushd libCacheSim/_build/ && make -j && popd;
 ```
 
@@ -354,8 +354,17 @@ done
 
 # Analyze the demotion results
 for f in demotion/*; do
-    python3 scripts/libCacheSim/plot_demotion.py calc --datapath $f; 
+    python3 scripts/libCacheSim/plot_demotion.py calc --datapath $f > demotion_0.1; 
 done
+
+# plot the demotion results
+python3 scripts/libCacheSim/plot_demotion.py plot --datapath demotion_0.1 --dataname MSR
+
+# turn off demotion tracking
+sed -i "s|#define TRACK_DEMOTION|// #define TRACK_DEMOTION|g" libCacheSim/libCacheSim/include/config.h
+# compile
+pushd libCacheSim/_build/ && make -j && popd
+
 ```
 
 ### Figure 11 Miss ratio reduction on different small FIFO queue sizes
