@@ -212,7 +212,7 @@ The results are generated using cachelib implementations and plot using
 ```bash
 python3 scripts/plot_throughput.py
 ```
-You should have `cachelib_thrpt_zipf_500.pdf` and `cachelib_thrpt_zipf_500.pdf`
+You should have `cachelib_thrpt_zipf_500.pdf` and `cachelib_thrpt_zipf_4000.pdf`
 
 [Optional] If you would like to run cachelib to verify the results, follow the instructions below
 Note that this needs a machine with Intel CPUs of at least 16 hardware threads (32 hyper-threads) in one NUMA domain. If you use Cloudlab, we recommend using r650 and c6420 from Clemson cloudlab. 
@@ -242,6 +242,37 @@ bash run.sh s3fifo 4000
 
 ```
 
+Run Segcache
+```bash
+git clone https://github.com/Thesys-lab/Segcache.git
+cd Segcache && mkdir _build && cd _build
+cmake ..
+# update the reader to use oracleGeneral trace 
+sed -i "s/reader->trace_entry_size = 20;/reader->trace_entry_size = 24;/g" ../benchmarks/trace_replay/reader.c
+make -j
+
+```
+
+create the config file for running N threads, you need to replace N with the number of threads you would like to run 
+```bash
+echo '''
+debug_logging: no
+trace_path: ../../cachelib/mybench/zipf1.0_1_100.oracleGeneral.bin
+default_ttl_list: 8640000:1
+heap_mem: 4294967296
+hash_power: 26
+seg_evict_opt: 5
+n_thread:N
+seg_n_thread:N
+
+''' > trace_replay_seg.conf
+```
+
+
+Run benchmarks
+```bash
+./benchmarks/trace_replay_seg trace_replay_seg.conf
+```
 
 ### Figure 9
 These figures are plotted using two CDN traces from Tencent and Wikimedia and can be downloaded here: [Tencent](https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/cacheDatasets/tencentPhoto/tencent_photo1.oracleGeneral.zst), [WikiMedia](https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/cacheDatasets/wiki/wiki_2019t.oracleGeneral.zst)
