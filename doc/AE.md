@@ -343,18 +343,18 @@ mkdir demotion;
 # get the demotion result of S3-FIFO
 for s in 0.01 0.02 0.05 0.10 0.20 0.30 0.40; do 
     echo "running simulation using cache S3-FIFO cache size 0.1 small fifo size $s trace MSR"
-    ./libCacheSim/_build/bin/cachesim msr.oracleGeneral.bin oracleGeneral s3fifo 0.1 --ignore-obj-size 1 -e "fifo-size-ratio=${s}" > demotion/MSR_S3FIFO_0.1_${s}
+    ./libCacheSim/_build/bin/cachesim msr.oracleGeneral.bin oracleGeneral s3fifo 0.1 --ignore-obj-size 1 -e "fifo-size-ratio=${s}" > demotion/MSR_S3FIFO_0.1_${s}_0.1
 done
 
 # get the demotion result of W-TinyLFU
 for s in 0.01 0.02 0.05 0.10 0.20 0.30 0.40; do 
     echo "running simulation using cache TinyLFU cache size 0.1 small fifo size $s trace MSR"
-    ./libCacheSim/_build/bin/cachesim msr.oracleGeneral.bin oracleGeneral wtinylfu 0.1 --ignore-obj-size 1 -e "window-size=${s}" > demotion/MSR_TinyLFU_0.1_${s}
+    ./libCacheSim/_build/bin/cachesim msr.oracleGeneral.bin oracleGeneral wtinylfu 0.1 --ignore-obj-size 1 -e "window-size=${s}" > demotion/MSR_TinyLFU_0.1_${s}_0.1
 done
 
 # Analyze the demotion results
 for f in demotion/*; do
-    python3 scripts/libCacheSim/plot_demotion.py calc --datapath $f > demotion_0.1; 
+    python3 scripts/libCacheSim/plot_demotion.py calc --datapath $f >> demotion_0.1; 
 done
 
 # plot the demotion results
