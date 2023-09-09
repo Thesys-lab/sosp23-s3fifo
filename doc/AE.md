@@ -43,6 +43,7 @@ zstd -d /path/to/data
 > **Note** 
 > The full dataset is very large (2 TB before decompression), so we suggest you only download the traces you need. 
 > Many of the experiments require long running time, be prepared. We suggest using the sampled Twitter traces so that you do not have to wait days for the results. 
+> libCacheSim allows you to run experiments in parallel, however, which requires more memory. If you would like to reduce DRAM usage, you can run one experiment at each time, e.g., specifying one algorithm or size. 
 
 > **Note**
 > The commands below assume you are in the root directory, which contains the libCacheSim, result, scripts, doc folders.

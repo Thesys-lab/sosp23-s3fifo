@@ -40,7 +40,7 @@ cachesim supports the following algorithms:
 * [GLCache](/libCacheSim/cache/eviction/GLCache/GLCache.c)
 * [TinyLFU](/libCacheSim/cache/eviction/TinyLFU.c)
 * [QD-LP](/libCacheSim/cache/eviction/QDLP.c)
-* [S3-FIFO](/libcacheSim/cache/eviction/S3FIFO.c)
+* [S3-FIFO](/libCacheSim/cache/eviction/S3FIFO.c)
 * [Sieve](/libCacheSim/cache/eviction/Sieve.c)
 ---
 
@@ -56,7 +56,7 @@ If this does not work, please
 2. read the following sections for self-installation.
 
 ### Install dependency
-libCacheSim uses [cmake](https://cmake.org/) build system and has a few dependencies: [glib](https://developer.gnome.org/glib/), [tcmalloc](https://github.com/google/tcmalloc), [zstd](https://github.com/facebook/zstd).
+libCacheSim uses gcc, make, [cmake](https://cmake.org/) build system and has a few dependencies: [glib](https://developer.gnome.org/glib/), [tcmalloc](https://github.com/google/tcmalloc), [zstd](https://github.com/facebook/zstd).
 Please see [install.md](/doc/install.md) for how to install the dependencies. 
 
 
