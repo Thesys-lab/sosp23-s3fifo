@@ -72,7 +72,7 @@ wget https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/cacheDatasets/msr/ms
 zstd -d twitter.oracleGeneral.bin.zst
 zstd -d msr.oracleGeneral.bin.zst
 
-# calculate one-hit-wonder ratio
+# calculate one-hit-wonder ratio, note that it may take 10 - 60 minutes
 python3 scripts/plot_one_hit_trace.py --datapath twitter.oracleGeneral.bin msr.oracleGeneral.bin --name twitter msr
 
 ```
@@ -94,7 +94,7 @@ wget https://ftp.pdl.cmu.edu/pub/datasets/twemcacheWorkload/sosp23/oneHit.zst
 # decompress 
 zstd -d oneHit.zst
 
-# plot
+# plot results, note that it may take 10 - 60 minutes
 python3 scripts/plot_one_hit_trace.py --datapath oneHit --plotbox
 
 # [optionally] this calculates the last two columns of Table 1
@@ -218,13 +218,13 @@ You should have `cachelib_thrpt_zipf_500.pdf` and `cachelib_thrpt_zipf_4000.pdf`
 [Optional] If you would like to run cachelib to verify the results, follow the instructions below
 Note that this needs a machine with Intel CPUs of at least 16 hardware threads (32 hyper-threads) in one NUMA domain. If you use Cloudlab, we recommend using r650 and c6420 from Clemson cloudlab. 
 
-Setup for the benchmark
+Setup for the benchmark were only tested on Ubuntu 20 and Ubuntu 22 and it may require some changes to use on other systems. 
 
 ```bash
 # generate Zipf request data of 1 million objects 100 million requests
 python3 libCacheSim/scripts/data_gen.py -m 1000000 -n 20000000 --alpha 1.0 --bin-output cachelib/mybench/zipf1.0_1_100.oracleGeneral.bin
 
-git clone https://github.com/Thesys-lab/cachelib-sosp23;
+git clone https://github.com/Thesys-lab/cachelib-sosp23 cachelib;
 cd cachelib/mybench/; 
 
 # turnoff turobo boose and change to performance mode, this is very important for getting consistent results
