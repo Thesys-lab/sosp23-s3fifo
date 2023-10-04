@@ -18,7 +18,7 @@ Our insight is that most objects in Zipf workloads will only be accessed once in
 
 
 ## Repo structure 
-The repo is a snapshot of [libCacheSim](https://github.com/1a1a11a/libCacheSim), modified [cachelib](https://github.com/facebook/cachelib/), and [distComp](https://github.com/1a1a11a/distComp). 
+The repo is a snapshot of [libCacheSim](https://github.com/cacheMon/libCacheSim), modified [cachelib](https://github.com/facebook/cachelib/), and [distComp](https://github.com/1a1a11a/distComp). 
 
 
 ### How to use libCacheSim
@@ -34,7 +34,7 @@ Use cacheSim to run cache simulations
 # ./cachesim DATAPATH TRACE_FORMAT EVICTION_ALGO CACHE_SIZE [OPTION...]
 ./cachesim DATA oracleGeneral fifo,arc,lecar,s3fifo 0 --ignore-obj-size 1
 ```
-Detailed instructions can be found at [libCacheSim](https://github.com/1a1a11a/libCacheSim).
+Detailed instructions can be found at [libCacheSim](https://github.com/cacheMon/libCacheSim).
 
 ### How to use cachelib
 ```bash
