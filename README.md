@@ -87,7 +87,7 @@ We greatly appreciate the resources and support provided by [Cloudlab](https://c
 
 
 #### Open source cache traces and **the people behind them**
-* [Twitter](https://github.com/twitter/cache-traces)
+* [Twitter](https://github.com/twitter/cache-trace)
 * [Tencent Block](https://www.usenix.org/conference/atc20/presentation/zhang-yu) ([Download](http://iotta.snia.org/traces/parallel?only=27917))
 * [Tencent Photo](https://dl.acm.org/doi/10.1145/3205289.3205299) ([Download](http://iotta.snia.org/traces/parallel?only=27476))
 * [Wikimedia CDN](https://wikitech.wikimedia.org/wiki/Analytics/Data_Lake/Traffic/Caching)
